@@ -4,91 +4,239 @@ from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
 
-# Load Environment Variables
+# =========================
+# LOAD ENV VARIABLES
+# =========================
 load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
 
-# Setup Bot with Intents
+TOKEN = os.getenv("DISCORD_TOKEN")
+
+# PUT YOUR SERVER ID HERE
+# Enable Developer Mode in Discord
+# Right click server -> Copy Server ID
+GUILD_ID = YOUR_SERVER_ID_HERE
+
+
+# =========================
+# BOT SETUP
+# =========================
 class KnowledgeBot(commands.Bot):
     def __init__(self):
         intents = discord.Intents.default()
-        intents.members = True  # Required to detect roles accurately
-        super().__init__(command_prefix="!", intents=intents)
+        intents.members = True
+        intents.message_content = True
+
+        super().__init__(
+            command_prefix="!",
+            intents=intents
+        )
 
     async def setup_hook(self):
-        # Syncs slash commands globally
-        await self.tree.sync()
-        print(f"Synced slash commands for {self.user}")
+        guild = discord.Object(id=GUILD_ID)
+
+        # Copy global commands to guild
+        self.tree.copy_global_to(guild=guild)
+
+        # Sync instantly to your server
+        await self.tree.sync(guild=guild)
+
+        print("✅ Slash commands synced instantly!")
+
 
 bot = KnowledgeBot()
 
-# --- DATABASE (Expand this as needed) ---
+
+# =========================
+# DATABASE
+# =========================
 DATA = {
     "cybersecurity": {
-        "explanation": "Cybersecurity is the protection of internet-connected systems from digital attacks. It involves securing networks, data, and devices from unauthorized access.",
-        "videos": ["• [Cybersecurity for Beginners](https://youtube.com/link1)", "• [How Hacking Works](https://youtube.com/link2)"],
-        "resources": ["• [OWASP Foundation](https://owasp.org)", "• [TryHackMe](https://tryhackme.com)"],
-        "roadmap": "1. Learn Networking basics\n2. Master Linux/Bash\n3. Understand Web Vulnerabilities\n4. Get Certs (CompTIA Security+)"
+        "explanation": (
+            "Cybersecurity is the protection of systems, "
+            "networks, and data from cyber attacks and hackers."
+        ),
+        "videos": [
+            "• Cybersecurity for Beginners",
+            "• How Ethical Hacking Works"
+        ],
+        "resources": [
+            "• https://owasp.org",
+            "• https://tryhackme.com"
+        ],
+        "roadmap": (
+            "1. Learn Networking\n"
+            "2. Learn Linux\n"
+            "3. Learn Web Security\n"
+            "4. Practice on TryHackMe\n"
+            "5. Learn Ethical Hacking"
+        )
     },
+
     "ai_ml": {
-        "explanation": "Artificial Intelligence (AI) simulates human intelligence in machines. Machine Learning (ML) is a subset where computers learn from data without explicit programming.",
-        "videos": ["• [AI for Everyone - Andrew Ng](https://youtube.com/link3)", "• [Neural Networks Explained](https://youtube.com/link4)"],
-        "resources": ["• [Scikit-Learn Docs](https://scikit-learn.org)", "• [Kaggle Courses](https://kaggle.com)"],
-        "roadmap": "1. Python Programming\n2. Linear Algebra & Stats\n3. Regression & Classification\n4. Deep Learning (PyTorch/TF)"
+        "explanation": (
+            "Artificial Intelligence helps machines simulate "
+            "human intelligence. Machine Learning allows systems "
+            "to learn from data."
+        ),
+        "videos": [
+            "• AI For Everyone",
+            "• Neural Networks Explained"
+        ],
+        "resources": [
+            "• https://scikit-learn.org",
+            "• https://kaggle.com"
+        ],
+        "roadmap": (
+            "1. Learn Python\n"
+            "2. Learn Math Basics\n"
+            "3. Learn Machine Learning\n"
+            "4. Build Projects\n"
+            "5. Learn Deep Learning"
+        )
     }
 }
 
-# --- HELPER FUNCTION ---
+
+# =========================
+# HELPER FUNCTION
+# =========================
 def get_contextual_topic(interaction: discord.Interaction):
-    """Detects topic based on channel name or user roles."""
     channel_name = interaction.channel.name.lower()
-    user_roles = [role.name.lower() for role in interaction.user.roles]
-    
+
+    user_roles = [
+        role.name.lower()
+        for role in interaction.user.roles
+    ]
+
     if "cyber" in channel_name or "cybersecurity" in user_roles:
         return "cybersecurity"
-    if "ai" in channel_name or "ml" in channel_name or "ai_ml" in user_roles:
+
+    if (
+        "ai" in channel_name
+        or "ml" in channel_name
+        or "ai_ml" in user_roles
+    ):
         return "ai_ml"
+
     return None
 
-# --- COMMANDS ---
 
-@bot.tree.command(name="learn", description="Get a quick explanation and resources for a topic")
-@app_commands.describe(topic="Specific topic (optional)")
-async def learn(interaction: discord.Interaction, topic: str = None):
-    # Detect topic if not provided
-    selected_topic = topic.lower() if topic else get_contextual_topic(interaction)
-    
+# =========================
+# COMMANDS
+# =========================
+
+# ---------- PING ----------
+@bot.tree.command(
+    name="ping",
+    description="Check if bot is online"
+)
+async def ping(interaction: discord.Interaction):
+    await interaction.response.send_message("🏓 Pong! Bot is working.")
+
+
+# ---------- LEARN ----------
+@bot.tree.command(
+    name="learn",
+    description="Learn about a topic"
+)
+@app_commands.describe(
+    topic="Example: cybersecurity or ai_ml"
+)
+async def learn(
+    interaction: discord.Interaction,
+    topic: str = None
+):
+    selected_topic = (
+        topic.lower()
+        if topic
+        else get_contextual_topic(interaction)
+    )
+
     if not selected_topic or selected_topic not in DATA:
-        return await interaction.response.send_message("❌ I couldn't find resources for that topic here. Try /learn cybersecurity", ephemeral=True)
+        return await interaction.response.send_message(
+            "❌ Topic not found.\n"
+            "Try:\n"
+            "/learn cybersecurity\n"
+            "/learn ai_ml",
+            ephemeral=True
+        )
 
     content = DATA[selected_topic]
-    embed = discord.Embed(title=f"🎓 Learning: {selected_topic.upper()}", color=discord.Color.green())
-    embed.add_field(name="Summary", value=content["explanation"], inline=False)
-    embed.add_field(name="📺 Watch", value="\n".join(content["videos"]), inline=True)
-    embed.add_field(name="📚 Read", value="\n".join(content["resources"]), inline=True)
-    
+
+    embed = discord.Embed(
+        title=f"🎓 {selected_topic.upper()}",
+        description=content["explanation"],
+        color=discord.Color.green()
+    )
+
+    embed.add_field(
+        name="📺 Videos",
+        value="\n".join(content["videos"]),
+        inline=False
+    )
+
+    embed.add_field(
+        name="📚 Resources",
+        value="\n".join(content["resources"]),
+        inline=False
+    )
+
     await interaction.response.send_message(embed=embed)
 
-@bot.tree.command(name="roadmap", description="Get a step-by-step learning path")
+
+# ---------- ROADMAP ----------
+@bot.tree.command(
+    name="roadmap",
+    description="Get learning roadmap"
+)
 async def roadmap(interaction: discord.Interaction):
     topic = get_contextual_topic(interaction)
+
     if not topic:
-        return await interaction.response.send_message("I'm not sure which roadmap you need. Try this in a specific channel!", ephemeral=True)
-    
-    embed = discord.Embed(title=f"🗺️ {topic.upper()} Roadmap", description=DATA[topic]["roadmap"], color=discord.Color.blue())
+        return await interaction.response.send_message(
+            "❌ Use this inside AI or Cyber channel.",
+            ephemeral=True
+        )
+
+    embed = discord.Embed(
+        title=f"🗺️ {topic.upper()} Roadmap",
+        description=DATA[topic]["roadmap"],
+        color=discord.Color.blue()
+    )
+
     await interaction.response.send_message(embed=embed)
 
-@bot.tree.command(name="resources", description="Quick links to top docs")
+
+# ---------- RESOURCES ----------
+@bot.tree.command(
+    name="resources",
+    description="Get useful resources"
+)
 async def resources(interaction: discord.Interaction):
     topic = get_contextual_topic(interaction)
-    if not topic:
-        return await interaction.response.send_message("Use this in a niche channel (AI, Cyber) for better results!", ephemeral=True)
-    
-    links = "\n".join(DATA[topic]["resources"])
-    await interaction.response.send_message(f"📚 **Top Resources for {topic.upper()}:**\n{links}")
 
+    if not topic:
+        return await interaction.response.send_message(
+            "❌ Use this in AI or Cyber channels.",
+            ephemeral=True
+        )
+
+    links = "\n".join(DATA[topic]["resources"])
+
+    await interaction.response.send_message(
+        f"📚 Resources for {topic.upper()}:\n{links}"
+    )
+
+
+# =========================
+# READY EVENT
+# =========================
 @bot.event
 async def on_ready():
-    print(f"Logged in as {bot.user}")
+    print(f"✅ Logged in as {bot.user}")
 
+
+# =========================
+# RUN BOT
+# =========================
 bot.run(TOKEN)
