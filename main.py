@@ -446,6 +446,261 @@ async def motivation(ctx):
     )
 
     await ctx.send(embed=embed)
+# =========================
+# TOPIC ALIASES
+# =========================
+
+ALIASES = {
+    "hacking": "cybersecurity",
+    "pentesting": "cybersecurity",
+    "infosec": "cybersecurity",
+    "machinelearning": "ai_ml",
+    "ai": "ai_ml",
+    "ml": "ai_ml"
+}
+
+# =========================
+# HELPER FUNCTION
+# =========================
+
+def resolve_topic(topic):
+
+    topic = topic.lower()
+
+    if topic in DATA:
+        return topic
+
+    if topic in ALIASES:
+        return ALIASES[topic]
+
+    return None
+
+# =========================
+# PROJECTS COMMAND
+# =========================
+
+@bot.command()
+@commands.cooldown(1, 5, commands.BucketType.user)
+async def projects(ctx, topic=None):
+
+    if topic is None:
+        return await ctx.send(
+            "❌ Usage: `!projects cybersecurity`"
+        )
+
+    topic = resolve_topic(topic)
+
+    if not topic:
+        return await ctx.send(
+            "❌ Topic not found."
+        )
+
+    project_data = {
+        "cybersecurity": [
+            "🔐 Password Strength Checker",
+            "🛡️ Port Scanner",
+            "🌐 Vulnerability Scanner",
+            "🕵️ Packet Sniffer",
+            "📡 Network Monitor"
+        ],
+
+        "ai_ml": [
+            "🤖 Chatbot",
+            "📈 Stock Price Predictor",
+            "🧠 Image Classifier",
+            "🎵 Recommendation System",
+            "🗣️ AI Voice Assistant"
+        ]
+    }
+
+    projects_list = "\n".join(
+        project_data[topic]
+    )
+
+    embed = discord.Embed(
+        title=f"💻 {topic.upper()} Projects",
+        description=projects_list,
+        color=discord.Color.dark_blue()
+    )
+
+    embed.set_footer(
+        text="Build projects to improve faster."
+    )
+
+    await ctx.send(embed=embed)
+
+# =========================
+# CAREER COMMAND
+# =========================
+
+@bot.command()
+@commands.cooldown(1, 5, commands.BucketType.user)
+async def career(ctx, topic=None):
+
+    if topic is None:
+        return await ctx.send(
+            "❌ Usage: `!career cybersecurity`"
+        )
+
+    topic = resolve_topic(topic)
+
+    if not topic:
+        return await ctx.send(
+            "❌ Topic not found."
+        )
+
+    careers = {
+        "cybersecurity": (
+            "🛡️ SOC Analyst\n"
+            "🔐 Penetration Tester\n"
+            "☁️ Cloud Security Engineer\n"
+            "🕵️ Malware Analyst\n"
+            "🚨 Incident Responder"
+        ),
+
+        "ai_ml": (
+            "🤖 ML Engineer\n"
+            "🧠 AI Researcher\n"
+            "📊 Data Scientist\n"
+            "⚡ Prompt Engineer\n"
+            "🖥️ Computer Vision Engineer"
+        )
+    }
+
+    embed = discord.Embed(
+        title=f"💼 Careers in {topic.upper()}",
+        description=careers[topic],
+        color=discord.Color.dark_green()
+    )
+
+    await ctx.send(embed=embed)
+
+# =========================
+# QUIZ COMMAND
+# =========================
+
+@bot.command()
+@commands.cooldown(1, 10, commands.BucketType.user)
+async def quiz(ctx, topic=None):
+
+    if topic is None:
+        return await ctx.send(
+            "❌ Usage: `!quiz cybersecurity`"
+        )
+
+    topic = resolve_topic(topic)
+
+    if not topic:
+        return await ctx.send(
+            "❌ Topic not found."
+        )
+
+    quizzes = {
+        "cybersecurity": {
+            "question": (
+                "What does VPN stand for?"
+            ),
+
+            "answer": (
+                "Virtual Private Network"
+            )
+        },
+
+        "ai_ml": {
+            "question": (
+                "What language is most used in AI?"
+            ),
+
+            "answer": (
+                "Python"
+            )
+        }
+    }
+
+    q = quizzes[topic]
+
+    embed = discord.Embed(
+        title=f"🧠 {topic.upper()} Quiz",
+        description=q["question"],
+        color=discord.Color.blurple()
+    )
+
+    embed.set_footer(
+        text=f"Answer: {q['answer']}"
+    )
+
+    await ctx.send(embed=embed)
+
+# =========================
+# DAILY RESOURCE
+# =========================
+
+@bot.command()
+@commands.cooldown(1, 15, commands.BucketType.user)
+async def dailyresource(ctx):
+
+    resources = [
+        "🔗 https://roadmap.sh",
+        "🔗 https://tryhackme.com",
+        "🔗 https://freecodecamp.org",
+        "🔗 https://kaggle.com",
+        "🔗 https://owasp.org"
+    ]
+
+    import random
+
+    resource = random.choice(resources)
+
+    embed = discord.Embed(
+        title="📚 Daily Learning Resource",
+        description=resource,
+        color=discord.Color.orange()
+    )
+
+    await ctx.send(embed=embed)
+
+# =========================
+# SMART RECOMMENDATION
+# =========================
+
+@bot.command()
+async def recommend(ctx, topic=None):
+
+    if topic is None:
+        return await ctx.send(
+            "❌ Usage: `!recommend ai_ml`"
+        )
+
+    topic = resolve_topic(topic)
+
+    if not topic:
+        return await ctx.send(
+            "❌ Topic not found."
+        )
+
+    recommendations = {
+        "cybersecurity": (
+            "✅ Learn Linux\n"
+            "✅ Learn Networking\n"
+            "✅ Learn Python\n"
+            "✅ Practice on TryHackMe"
+        ),
+
+        "ai_ml": (
+            "✅ Learn Python\n"
+            "✅ Learn Statistics\n"
+            "✅ Learn Linear Algebra\n"
+            "✅ Build ML Projects"
+        )
+    }
+
+    embed = discord.Embed(
+        title=f"🎯 Recommendations for {topic.upper()}",
+        description=recommendations[topic],
+        color=discord.Color.brand_green()
+    )
+
+    await ctx.send(embed=embed)    
 
 # =========================
 # ERROR HANDLING
