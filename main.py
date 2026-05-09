@@ -81,7 +81,9 @@ async def load_cogs():
         "cogs.learning",
         "cogs.resources",
         "cogs.ai_tools",
-        "cogs.news"
+        "cogs.news",
+        "cogs.onboarding",
+        "cogs.github_tools"
     ]
 
     for cog in cogs:
