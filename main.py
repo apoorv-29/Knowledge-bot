@@ -80,6 +80,7 @@ async def load_cogs():
         "cogs.utility",
         "cogs.learning"
         "cogs.resources"
+        "cogs.ai_tools"
     ]
 
     for cog in cogs:
