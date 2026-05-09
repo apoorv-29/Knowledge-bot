@@ -77,7 +77,8 @@ async def on_ready():
 async def load_cogs():
 
     cogs = [
-        "cogs.utility"
+        "cogs.utility",
+        "cogs.learning"
     ]
 
     for cog in cogs:
