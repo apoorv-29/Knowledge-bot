@@ -78,8 +78,8 @@ async def load_cogs():
 
     cogs = [
         "cogs.utility",
-        "cogs.learning"
-        "cogs.resources"
+        "cogs.learning",
+        "cogs.resources",
         "cogs.ai_tools"
     ]
 
