@@ -1,0 +1,256 @@
+import discord
+from discord.ext import commands
+import random
+
+# =========================================
+# AI RESPONSES DATABASE
+# =========================================
+
+EXPLANATIONS = {
+
+    "api": (
+        "An API (Application Programming Interface) "
+        "allows applications to communicate with "
+        "each other."
+    ),
+
+    "linux": (
+        "Linux is an open-source operating system "
+        "widely used in servers, cybersecurity, "
+        "cloud computing, and development."
+    ),
+
+    "malware": (
+        "Malware is malicious software designed "
+        "to damage, exploit, or steal data."
+    ),
+
+    "llm": (
+        "LLM stands for Large Language Model. "
+        "Examples include GPT, Claude, Gemini, "
+        "and Llama."
+    ),
+
+    "docker": (
+        "Docker allows developers to package "
+        "applications into containers for "
+        "consistent deployment."
+    ),
+
+    "sql_injection": (
+        "SQL Injection is a web vulnerability "
+        "where attackers manipulate database "
+        "queries through user input."
+    ),
+
+    "xss": (
+        "Cross-Site Scripting (XSS) allows "
+        "attackers to inject malicious scripts "
+        "into websites."
+    ),
+
+    "neural_network": (
+        "A neural network is a machine learning "
+        "model inspired by the human brain."
+    )
+}
+
+# =========================================
+# DEBUGGING TIPS
+# =========================================
+
+DEBUGGING_TIPS = [
+
+    "🔍 Read the FULL error message carefully.",
+    "🧠 Check indentation and syntax.",
+    "📦 Verify installed packages.",
+    "🔑 Ensure environment variables exist.",
+    "🛠 Restart the bot after updates.",
+    "📂 Verify file paths are correct.",
+    "🚀 Check Railway deployment logs.",
+    "⚠️ Never hardcode secrets."
+]
+
+# =========================================
+# INTERVIEW QUESTIONS
+# =========================================
+
+INTERVIEW_QUESTIONS = [
+
+    "Explain REST APIs.",
+    "Difference between SQL and NoSQL?",
+    "Explain TCP vs UDP.",
+    "What is OOP?",
+    "Explain XSS vulnerability.",
+    "What is overfitting in ML?",
+    "Difference between AI and ML?"
+]
+
+# =========================================
+# AI TOOLS COG
+# =========================================
+
+class AITools(commands.Cog):
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    # =====================================
+    # EXPLAIN COMMAND
+    # =====================================
+
+    @commands.command()
+    async def explain(self, ctx, *, topic=None):
+
+        if not topic:
+
+            return await ctx.send(
+                "❌ Usage: `!explain api`"
+            )
+
+        topic = topic.lower()
+
+        if topic not in EXPLANATIONS:
+
+            return await ctx.send(
+                "❌ No explanation available."
+            )
+
+        embed = discord.Embed(
+            title=f"🧠 {topic.upper()}",
+            description=EXPLANATIONS[topic],
+            color=discord.Color.blue()
+        )
+
+        embed.set_footer(
+            text="AI Knowledge Engine"
+        )
+
+        await ctx.send(embed=embed)
+
+    # =====================================
+    # DEBUG COMMAND
+    # =====================================
+
+    @commands.command()
+    async def debug(self, ctx):
+
+        tip = random.choice(DEBUGGING_TIPS)
+
+        embed = discord.Embed(
+            title="🛠 Debugging Tip",
+            description=tip,
+            color=discord.Color.orange()
+        )
+
+        await ctx.send(embed=embed)
+
+    # =====================================
+    # INTERVIEW COMMAND
+    # =====================================
+
+    @commands.command()
+    async def interview(self, ctx):
+
+        question = random.choice(
+            INTERVIEW_QUESTIONS
+        )
+
+        embed = discord.Embed(
+            title="💼 Interview Question",
+            description=question,
+            color=discord.Color.green()
+        )
+
+        await ctx.send(embed=embed)
+
+    # =====================================
+    # ASK COMMAND
+    # =====================================
+
+    @commands.command()
+    async def ask(self, ctx, *, question=None):
+
+        if not question:
+
+            return await ctx.send(
+                "❌ Usage: `!ask how does AI work?`"
+            )
+
+        responses = [
+
+            "🤖 Interesting question. Research this deeply.",
+
+            "🧠 Start by learning the fundamentals first.",
+
+            "🚀 Build projects around this topic.",
+
+            "📚 Combine theory with practical labs.",
+
+            "💡 This topic is important in modern tech."
+        ]
+
+        embed = discord.Embed(
+            title="🤖 AI Assistant",
+            description=random.choice(responses),
+            color=discord.Color.purple()
+        )
+
+        embed.add_field(
+            name="❓ Your Question",
+            value=question,
+            inline=False
+        )
+
+        await ctx.send(embed=embed)
+
+    # =====================================
+    # TECHSTACK COMMAND
+    # =====================================
+
+    @commands.command()
+    async def techstack(self, ctx):
+
+        embed = discord.Embed(
+            title="⚡ Recommended Tech Stack",
+            description=(
+                "🐍 Python\n"
+                "🌐 FastAPI\n"
+                "🗄 PostgreSQL\n"
+                "🐳 Docker\n"
+                "☁ Railway / AWS\n"
+                "🤖 OpenAI / Groq APIs"
+            ),
+            color=discord.Color.teal()
+        )
+
+        await ctx.send(embed=embed)
+
+    # =====================================
+    # DEVOPS COMMAND
+    # =====================================
+
+    @commands.command()
+    async def devops(self, ctx):
+
+        embed = discord.Embed(
+            title="🚀 DevOps Learning Path",
+            description=(
+                "1. Linux\n"
+                "2. Docker\n"
+                "3. GitHub Actions\n"
+                "4. CI/CD\n"
+                "5. Kubernetes\n"
+                "6. Cloud Platforms"
+            ),
+            color=discord.Color.dark_blue()
+        )
+
+        await ctx.send(embed=embed)
+
+# =========================================
+# COG SETUP
+# =========================================
+
+async def setup(bot):
+    await bot.add_cog(AITools(bot))
