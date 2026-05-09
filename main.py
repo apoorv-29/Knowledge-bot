@@ -79,6 +79,7 @@ async def load_cogs():
     cogs = [
         "cogs.utility",
         "cogs.learning"
+        "cogs.resources"
     ]
 
     for cog in cogs:
