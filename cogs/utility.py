@@ -30,6 +30,10 @@ class Utility(commands.Cog):
             color=discord.Color.green()
         )
 
+        embed.set_footer(
+            text="Knowledge Bot Network Monitor"
+        )
+
         await ctx.send(embed=embed)
 
     # =====================================
@@ -43,10 +47,14 @@ class Utility(commands.Cog):
             title="📚 Knowledge Bot Help",
             description=(
                 "Advanced AI + Cybersecurity + "
-                "Programming Learning Bot"
+                "Programming Learning Ecosystem"
             ),
             color=discord.Color.blurple()
         )
+
+        # =====================================
+        # BASIC COMMANDS
+        # =====================================
 
         embed.add_field(
             name="🛠 Basic Commands",
@@ -54,28 +62,27 @@ class Utility(commands.Cog):
                 "`!ping`\n"
                 "`!help`\n"
                 "`!botinfo`\n"
-                "`!motivation`"
+                "`!motivation`\n"
+                "`!alive`\n"
+                "`!start`"
             ),
             inline=False
         )
+
+        # =====================================
+        # LEARNING COMMANDS
+        # =====================================
 
         embed.add_field(
             name="🎓 Learning Commands",
             value=(
                 "`!learn cybersecurity`\n"
-                "`!roadmap cybersecurity`\n"
-                "`!resources cybersecurity`\n"
-                "`!books cybersecurity`\n"
-                "`!channels cybersecurity`\n"
-                "`!specialize cybersecurity`"
-            ),
-            inline=False
-        )
-
-        embed.add_field(
-            name="🚀 Advanced Commands",
-            value=(
-                "`!projects cybersecurity`\n"
+                "`!roadmap ai_ml`\n"
+                "`!resources programming`\n"
+                "`!books psychology`\n"
+                "`!channels ai_ml`\n"
+                "`!specialize cybersecurity`\n"
+                "`!projects programming`\n"
                 "`!career ai_ml`\n"
                 "`!quiz cybersecurity`\n"
                 "`!recommend ai`\n"
@@ -84,8 +91,77 @@ class Utility(commands.Cog):
             inline=False
         )
 
+        # =====================================
+        # AI COMMANDS
+        # =====================================
+
+        embed.add_field(
+            name="🤖 AI Assistant Commands",
+            value=(
+                "`!explain api`\n"
+                "`!ask what is docker`\n"
+                "`!debug`\n"
+                "`!interview`\n"
+                "`!techstack`\n"
+                "`!devops`"
+            ),
+            inline=False
+        )
+
+        # =====================================
+        # NEWS COMMANDS
+        # =====================================
+
+        embed.add_field(
+            name="📰 News & Trends",
+            value=(
+                "`!news cybersecurity`\n"
+                "`!news ai`\n"
+                "`!news programming`\n"
+                "`!trending`\n"
+                "`!startups`"
+            ),
+            inline=False
+        )
+
+        # =====================================
+        # RESOURCE COMMANDS
+        # =====================================
+
+        embed.add_field(
+            name="📚 Resource Commands",
+            value=(
+                "`!github cybersecurity`\n"
+                "`!certifications ai_ml`\n"
+                "`!labs`\n"
+                "`!codingplatforms`\n"
+                "`!websites cybersecurity`\n"
+                "`!tools programming`"
+            ),
+            inline=False
+        )
+
+        # =====================================
+        # TOPICS
+        # =====================================
+
+        embed.add_field(
+            name="🧠 Available Topics",
+            value=(
+                "• cybersecurity\n"
+                "• ai_ml\n"
+                "• programming\n"
+                "• psychology\n"
+                "• startups\n"
+                "• devops\n"
+                "• cloud\n"
+                "• competitive_programming"
+            ),
+            inline=False
+        )
+
         embed.set_footer(
-            text="Knowledge Bot • Production Version"
+            text="Knowledge Bot • Production Edition"
         )
 
         await ctx.send(embed=embed)
@@ -103,7 +179,7 @@ class Utility(commands.Cog):
             title="🤖 Knowledge Bot",
             description=(
                 "AI Learning + Cybersecurity + "
-                "Developer Assistant"
+                "Developer Ecosystem"
             ),
             color=discord.Color.blue()
         )
@@ -150,8 +226,14 @@ class Utility(commands.Cog):
             inline=False
         )
 
+        embed.set_thumbnail(
+            url=self.bot.user.avatar.url
+            if self.bot.user.avatar
+            else discord.Embed.Empty
+        )
+
         embed.set_footer(
-            text="Knowledge Bot"
+            text="Knowledge Bot System Monitor"
         )
 
         await ctx.send(embed=embed)
@@ -164,11 +246,22 @@ class Utility(commands.Cog):
     async def motivation(self, ctx):
 
         quotes = [
+
             "🚀 Consistency beats motivation.",
+
             "🔥 Discipline creates experts.",
+
             "💻 Build projects to learn faster.",
+
             "🧠 Learn deeply, not quickly.",
-            "🎯 Focus on progress, not perfection."
+
+            "🎯 Focus on progress, not perfection.",
+
+            "⚡ Small improvements daily become massive results.",
+
+            "🌍 Skills create freedom.",
+
+            "🛡️ Cybersecurity is one of the future-proof careers."
         ]
 
         quote = random.choice(quotes)
@@ -178,6 +271,51 @@ class Utility(commands.Cog):
             description=quote,
             color=discord.Color.orange()
         )
+
+        embed.set_footer(
+            text="Keep learning daily 🚀"
+        )
+
+        await ctx.send(embed=embed)
+
+    # =====================================
+    # SERVERINFO COMMAND
+    # =====================================
+
+    @commands.command()
+    async def serverinfo(self, ctx):
+
+        guild = ctx.guild
+
+        embed = discord.Embed(
+            title=f"🌐 {guild.name}",
+            color=discord.Color.dark_blue()
+        )
+
+        embed.add_field(
+            name="👥 Members",
+            value=guild.member_count,
+            inline=True
+        )
+
+        embed.add_field(
+            name="📁 Channels",
+            value=len(guild.channels),
+            inline=True
+        )
+
+        embed.add_field(
+            name="🎭 Roles",
+            value=len(guild.roles),
+            inline=True
+        )
+
+        embed.set_footer(
+            text="Knowledge Bot Server Analytics"
+        )
+
+        if guild.icon:
+            embed.set_thumbnail(url=guild.icon.url)
 
         await ctx.send(embed=embed)
 
