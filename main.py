@@ -9,12 +9,26 @@ from dotenv import load_dotenv
 # =========================
 load_dotenv()
 
-TOKEN = os.getenv("DISCORD_TOKEN")
+TOKEN = os.getenv("TOKEN")
 
-# PUT YOUR SERVER ID HERE
-# Enable Developer Mode in Discord
-# Right click server -> Copy Server ID
-GUILD_ID =1501472929446105098
+if not TOKEN:
+    raise ValueError("❌ TOKEN not found in Railway Variables or .env file")
+
+# =========================
+# PUT YOUR REAL SERVER ID
+# =========================
+# HOW TO GET SERVER ID:
+#
+# 1. Open Discord
+# 2. Go to User Settings
+# 3. Advanced
+# 4. Turn ON Developer Mode
+# 5. Right-click YOUR SERVER ICON
+# 6. Click "Copy Server ID"
+#
+# Paste it below
+
+GUILD_ID = 123456789012345678  # REPLACE THIS
 
 
 # =========================
@@ -32,15 +46,16 @@ class KnowledgeBot(commands.Bot):
         )
 
     async def setup_hook(self):
-        guild = discord.Object(id=GUILD_ID)
+        try:
+            guild = discord.Object(id=GUILD_ID)
 
-        # Copy global commands to guild
-        self.tree.copy_global_to(guild=guild)
+            # Sync slash commands instantly
+            await self.tree.sync(guild=guild)
 
-        # Sync instantly to your server
-        await self.tree.sync(guild=guild)
+            print("✅ Slash commands synced successfully!")
 
-        print("✅ Slash commands synced instantly!")
+        except Exception as e:
+            print(f"❌ Sync Error: {e}")
 
 
 bot = KnowledgeBot()
@@ -52,45 +67,56 @@ bot = KnowledgeBot()
 DATA = {
     "cybersecurity": {
         "explanation": (
-            "Cybersecurity is the protection of systems, "
-            "networks, and data from cyber attacks and hackers."
+            "Cybersecurity protects systems, networks, "
+            "and data from hackers and cyber attacks."
         ),
+
         "videos": [
             "• Cybersecurity for Beginners",
-            "• How Ethical Hacking Works"
+            "• Ethical Hacking Explained",
+            "• Networking Basics"
         ],
+
         "resources": [
             "• https://owasp.org",
-            "• https://tryhackme.com"
+            "• https://tryhackme.com",
+            "• https://hackthebox.com"
         ],
+
         "roadmap": (
             "1. Learn Networking\n"
             "2. Learn Linux\n"
             "3. Learn Web Security\n"
             "4. Practice on TryHackMe\n"
-            "5. Learn Ethical Hacking"
+            "5. Learn Ethical Hacking\n"
+            "6. Build Projects"
         )
     },
 
     "ai_ml": {
         "explanation": (
-            "Artificial Intelligence helps machines simulate "
-            "human intelligence. Machine Learning allows systems "
-            "to learn from data."
+            "Artificial Intelligence enables machines "
+            "to simulate human intelligence. "
+            "Machine Learning allows systems to learn from data."
         ),
+
         "videos": [
             "• AI For Everyone",
-            "• Neural Networks Explained"
+            "• Neural Networks Explained",
+            "• Python for AI"
         ],
+
         "resources": [
             "• https://scikit-learn.org",
-            "• https://kaggle.com"
+            "• https://kaggle.com",
+            "• https://pytorch.org"
         ],
+
         "roadmap": (
             "1. Learn Python\n"
             "2. Learn Math Basics\n"
             "3. Learn Machine Learning\n"
-            "4. Build Projects\n"
+            "4. Build AI Projects\n"
             "5. Learn Deep Learning"
         )
     }
@@ -101,6 +127,7 @@ DATA = {
 # HELPER FUNCTION
 # =========================
 def get_contextual_topic(interaction: discord.Interaction):
+
     channel_name = interaction.channel.name.lower()
 
     user_roles = [
@@ -108,7 +135,10 @@ def get_contextual_topic(interaction: discord.Interaction):
         for role in interaction.user.roles
     ]
 
-    if "cyber" in channel_name or "cybersecurity" in user_roles:
+    if (
+        "cyber" in channel_name
+        or "cybersecurity" in user_roles
+    ):
         return "cybersecurity"
 
     if (
@@ -122,19 +152,22 @@ def get_contextual_topic(interaction: discord.Interaction):
 
 
 # =========================
-# COMMANDS
+# PING COMMAND
 # =========================
-
-# ---------- PING ----------
 @bot.tree.command(
     name="ping",
-    description="Check if bot is online"
+    description="Check if the bot is online"
 )
 async def ping(interaction: discord.Interaction):
-    await interaction.response.send_message("🏓 Pong! Bot is working.")
+
+    await interaction.response.send_message(
+        "🏓 Pong! Bot is online."
+    )
 
 
-# ---------- LEARN ----------
+# =========================
+# LEARN COMMAND
+# =========================
 @bot.tree.command(
     name="learn",
     description="Learn about a topic"
@@ -146,15 +179,20 @@ async def learn(
     interaction: discord.Interaction,
     topic: str = None
 ):
+
     selected_topic = (
         topic.lower()
         if topic
         else get_contextual_topic(interaction)
     )
 
-    if not selected_topic or selected_topic not in DATA:
+    if (
+        not selected_topic
+        or selected_topic not in DATA
+    ):
+
         return await interaction.response.send_message(
-            "❌ Topic not found.\n"
+            "❌ Topic not found.\n\n"
             "Try:\n"
             "/learn cybersecurity\n"
             "/learn ai_ml",
@@ -181,20 +219,26 @@ async def learn(
         inline=False
     )
 
-    await interaction.response.send_message(embed=embed)
+    await interaction.response.send_message(
+        embed=embed
+    )
 
 
-# ---------- ROADMAP ----------
+# =========================
+# ROADMAP COMMAND
+# =========================
 @bot.tree.command(
     name="roadmap",
-    description="Get learning roadmap"
+    description="Get roadmap for topic"
 )
 async def roadmap(interaction: discord.Interaction):
+
     topic = get_contextual_topic(interaction)
 
     if not topic:
+
         return await interaction.response.send_message(
-            "❌ Use this inside AI or Cyber channel.",
+            "❌ Use this inside AI or Cybersecurity channels.",
             ephemeral=True
         )
 
@@ -204,28 +248,106 @@ async def roadmap(interaction: discord.Interaction):
         color=discord.Color.blue()
     )
 
-    await interaction.response.send_message(embed=embed)
+    await interaction.response.send_message(
+        embed=embed
+    )
 
 
-# ---------- RESOURCES ----------
+# =========================
+# RESOURCES COMMAND
+# =========================
 @bot.tree.command(
     name="resources",
-    description="Get useful resources"
+    description="Get learning resources"
 )
 async def resources(interaction: discord.Interaction):
+
     topic = get_contextual_topic(interaction)
 
     if not topic:
+
         return await interaction.response.send_message(
-            "❌ Use this in AI or Cyber channels.",
+            "❌ Use this inside AI or Cybersecurity channels.",
             ephemeral=True
         )
 
     links = "\n".join(DATA[topic]["resources"])
 
     await interaction.response.send_message(
-        f"📚 Resources for {topic.upper()}:\n{links}"
+        f"📚 Resources for {topic.upper()}:\n\n{links}"
     )
+
+
+# =========================
+# HELP COMMAND
+# =========================
+@bot.tree.command(
+    name="helpme",
+    description="Show all commands"
+)
+async def helpme(interaction: discord.Interaction):
+
+    embed = discord.Embed(
+        title="🤖 Knowledge Bot Commands",
+        color=discord.Color.purple()
+    )
+
+    embed.add_field(
+        name="/ping",
+        value="Check bot status",
+        inline=False
+    )
+
+    embed.add_field(
+        name="/learn",
+        value="Learn a topic",
+        inline=False
+    )
+
+    embed.add_field(
+        name="/roadmap",
+        value="Get learning roadmap",
+        inline=False
+    )
+
+    embed.add_field(
+        name="/resources",
+        value="Get useful resources",
+        inline=False
+    )
+
+    await interaction.response.send_message(
+        embed=embed
+    )
+
+
+# =========================
+# GLOBAL ERROR HANDLER
+# =========================
+@bot.tree.error
+async def on_app_command_error(
+    interaction: discord.Interaction,
+    error: app_commands.AppCommandError
+):
+
+    print(f"❌ Command Error: {error}")
+
+    try:
+        if interaction.response.is_done():
+
+            await interaction.followup.send(
+                "⚠️ Something went wrong.",
+                ephemeral=True
+            )
+
+        else:
+            await interaction.response.send_message(
+                "⚠️ Something went wrong.",
+                ephemeral=True
+            )
+
+    except Exception as e:
+        print(f"❌ Error Handler Failed: {e}")
 
 
 # =========================
@@ -233,7 +355,12 @@ async def resources(interaction: discord.Interaction):
 # =========================
 @bot.event
 async def on_ready():
-    print(f"✅ Logged in as {bot.user}")
+
+    print("===================================")
+    print(f"✅ Logged in as: {bot.user}")
+    print(f"✅ Bot ID: {bot.user.id}")
+    print("✅ Bot is ONLINE")
+    print("===================================")
 
 
 # =========================
