@@ -14,7 +14,7 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 # PUT YOUR SERVER ID HERE
 # Enable Developer Mode in Discord
 # Right click server -> Copy Server ID
-GUILD_ID =123456789012345678
+GUILD_ID =1501472929446105098
 
 
 # =========================
